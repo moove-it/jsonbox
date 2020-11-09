@@ -93,6 +93,10 @@ const parse_query = req_q => {
 };
 
 const getExpiryDate = () => {
+	if (!config.DATA_EXPIRY_IN_DAYS) {
+		return null;
+	}
+
 	const expiryDate = new Date();
 	expiryDate.setDate(expiryDate.getDate() + config.DATA_EXPIRY_IN_DAYS);
 	return expiryDate;
