@@ -1,21 +1,37 @@
-version: '2'
+version: '3'
+
 services:
-  mongo:
-    container_name: mongo
-    image: mongo
-    volumes:
-      - ./data:/data/db
-    ports:
-      - '27017:27017'
   jsonbox:
-    container_name: jsonbox
-    restart: always
-    environment:
-      - MONGODB_URI=mongodb://mongo:27017/jsonbox-io-dev
     build: .
-    ports:
-      - '3000:3000'
-    links:
-      - mongo
+    container_name: jsonbox
+    restart: unless-stopped
+    environment:     # variables from .env file
+      - MONGODB_URI
     depends_on:
-      - mongo
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jsonbox.entrypoints=http"
+      - "traefik.http.routers.jsonbox.rule=Host(`jsonbox.cloud.exo-imaging.com`)"
+      - "traefik.http.middlewares.jsonbox-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.jsonbox.middlewares=jsonbox-https-redirect"
+      - "traefik.http.routers.jsonbox-secure.entrypoints=https"
+      - "traefik.http.routers.jsonbox-secure.rule=Host(`jsonbox.cloud.exo-imaging.com`)"
+      - "traefik.http.routers.jsonbox-secure.tls=true"
+      - "traefik.http.routers.jsonbox-secure.tls.certresolver=http"
+      - "traefik.http.routers.jsonbox-secure.service=jsonbox"
+      - "traefik.http.services.jsonbox.loadbalancer.server.port=3000"
+
+  traefik:
+    image: traefik:v2.1
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - $PWD/traefik-proxy/acme.json:/acme.json
+      - $PWD/traefik-proxy/traefik.yml:/traefik.yml
+

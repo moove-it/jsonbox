@@ -17,3 +17,6 @@ data
 # Sublime text files
 jsonbox.sublime-project
 jsonbox.sublime-workspace
+
+traefik-proxy/acme.json
+.env

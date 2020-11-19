@@ -1,0 +1,7 @@
+traefik-proxy
+traefik-proxy/*
+.env
+env.sample
+.git
+.DS_Store
+data
