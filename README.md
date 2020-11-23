@@ -252,8 +252,6 @@ This is FREE service, so we have to have some limitations to avoid abuse and sta
 2. Can't push or pull more than 1000 records at a time.
 3. `POST` requests are rate-limited to 100 per hour per IP address
 4. There is no limit on the number of records you store in a box, but please don't abuse the API by storing large datasets of more than **5000** records. This is meant for small projects and that's why it is offered FREE of cost.
-5. 30 days of data retention.
-6. No backup. If your data is lost due to some technical issues, its lost forever.
 
 ### Wrappers
 
@@ -297,6 +295,32 @@ npm start
 ```
 
 to start the development server on port `3000`. Your jsonbox instance will be running on `http://localhost:3000`. Alternatively you can run the application using docker with `docker-compose up`.
+
+### How to deploy
+
+The service is running in an EC2 instance with docker-compose.
+
+1. login via ssh `ssh ubuntu@jsonbox.cloud.exo-imaging.com`
+2. navigate to the project directory, `cd jsonbox`
+3. pull the changes with git
+4. re-build the containers `docker-compose up --build`
+
+## Database
+
+Host: jsonbox-production.cluster-cpn0ao2wjzul.us-west-2.docdb.amazonaws.com
+Port: 5432
+
+For security reasons the database is not public. In order to connect from your computer you need to do it throught the app server.
+
+If you want to connect from your computer directly you need to setup an SSH tunnel. Use the following command to create the tunnel:
+
+`ssh ubuntu@jsonbox.cloud.exo-imaging.com -L 27017:jsonbox-production.cluster-cpn0ao2wjzul.us-west-2.docdb.amazonaws.com:27017 -N`
+
+Then configure your DB client to connect to localhost port 27017.
+
+**Notes**:
+- Keep the terminal tab open to keep the tunnel working.
+- Forgot the where in the delete?, don't worry, we have automatic backups.
 
 ### LICENSE
 
